@@ -23,8 +23,9 @@ type alias Model a =
 
 type Msg
     = Render
-    | Restore
-    | AlternateText
+    | TextA
+    | TextB
+    | TextC
     | GetContent String
 
 
@@ -37,8 +38,8 @@ init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
     let
         model =
-            { sourceText = initialSourceText
-            , editRecord = MeenyLatex.Driver.setup 0 initialSourceText
+            { sourceText = textA
+            , editRecord = MeenyLatex.Driver.setup 0 textA
             }
     
     in
@@ -60,14 +61,19 @@ update msg model =
             , Cmd.none
             )
 
-        Restore ->
-           ({ model | sourceText = initialSourceText
-              , editRecord = MeenyLatex.Driver.setup 0 initialSourceText
+        TextA ->
+           ({ model | sourceText = textA
+              , editRecord = MeenyLatex.Driver.setup 0 textA
             }, Cmd.none)
 
-        AlternateText ->
-           ({ model | sourceText = alternateSourceText
-              , editRecord = MeenyLatex.Driver.setup 0 alternateSourceText
+        TextB ->
+           ({ model | sourceText = textB
+              , editRecord = MeenyLatex.Driver.setup 0 textB
+            }, Cmd.none)
+
+        TextC ->
+           ({ model | sourceText = textC
+              , editRecord = MeenyLatex.Driver.setup 0 textC
             }, Cmd.none)
 
 
@@ -85,9 +91,10 @@ view model =
         , editor model
         , spacer 30
         , span [] [ 
-              button ([ onClick Render ] ++ buttonStyle) [ text "Render" ]
-            , button ([ onClick AlternateText ] ++ buttonStyle) [ text "Alt Text" ]
-            , button ([ onClick Restore ] ++ buttonStyle) [ text "Orig Text" ]
+             button ([ onClick TextA ] ++ buttonStyle) [ text "Text A" ]
+            , button ([ onClick TextB ] ++ buttonStyle) [ text "Text B" ]
+            , button ([ onClick TextC ] ++ buttonStyle) [ text "Text C" ]
+            , button ([ onClick Render ] ++ buttonStyle) [ text "Render" ]
         ]
         , renderedSourcePane model
         ]
@@ -128,7 +135,7 @@ buttonStyle : List (Html.Attribute msg)
 buttonStyle =
     [ style "backgroundColor" "rgb(100,100,100)"
     , style "color" "white"
-    , style "width" "100px"
+    , style "width" "90px"
     , style "height" "25px"
     , style "margin-left" "20px"
     , style "font-size" "12pt"
@@ -161,14 +168,23 @@ textStyle width height color =
 
 -- SOURCE TEXT
 
-alternateSourceText = 
+textA = 
+  """
+\\strong{Welcome!}
+
+$$
+\\int e^x dx = e^x + C
+$$
+"""
+
+textB = 
     """
 $$
 \\frac{d}{dx} e^{kx} = ke^{kx}
 $$
 """
 
-initialSourceText =
+textC =
     """
 \\section{Introduction}
 
