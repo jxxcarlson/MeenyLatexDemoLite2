@@ -30,48 +30,59 @@ https://ellie-test-19-cutover.now.sh/q96nCK64MRa1
 Notes
 -----
 Below is console output for a session with
-MeenyLatexDemoLite`` -- console.log
+MeenyLatexDemoLite -- console.log
 statements were put in `index.html` to try to 
 understand why math text is not displayed on startup.
 
-I believe it is a timing problem: The calls
-in custom element code occur before the 
-content in the dom is available.  However,
+I believe the problem has to do with timing/sequencing: 
+Conjecturally, the calls to the custom element code occur before 
+the content in the DOM is available.  However,
 (1) I don't know enough to know if this is 
 true; (2) I don't know how to fix the problem.
 
-```
-STARTUP
+The call to the custom element code results 
+from executing
 
-connectedCallback index.html:112:3 
-enqueueTypeset index.html:71:2 
-connectedCallback index.html:112:3 
-enqueueTypeset index.html:71:2 
-connectedCallback index.html:112:3 
+```
+editRecord = MeenyLatex.Driver.setup 0 textA
+```
+
+in initializing or updating the model. This code
+is not very transparent
+
+```
+1. STARTUP
+# init is called, and it calls
+# editRecord = MeenyLatex.Driver.setup 0 textA
+# in updating the model
+
+connectedCallback
 enqueueTypeset
+
+// No math display 
 
 ============
 
-CLICK TAB “Alt Text”
+2. CLICK TAB “Text B”:
+# update is called, and it calls
+# editRecord = MeenyLatex.Driver.setup 0 textB
 
-set content index.html:102:3 
-connectedCallback index.html:112:3 
+set content
+connectedCallback
 enqueueTypeset
+
+// Math display OK
 
 =====
 
-CLICK TAB “Orig Text”
+3. CLICK TAB “Text A”
+# update is called, and it calls
+# editRecord = MeenyLatex.Driver.setup 0 textA
+# This is the same call as in (1)
 
-set content index.html:102:3 
-connectedCallback index.html:112:3 
-enqueueTypeset index.html:71:2 
-set content index.html:102:3 
-connectedCallback index.html:112:3 
-enqueueTypeset index.html:71:2 
-set content index.html:102:3 
-connectedCallback index.html:112:3 
-enqueueTypeset index.html:71:2 
-set content index.html:102:3 
-connectedCallback index.html:112:3 
+set content
+connectedCallback
 enqueueTypeset
+
+// Math display OK
 ```
