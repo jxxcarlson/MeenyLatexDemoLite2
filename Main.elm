@@ -18,11 +18,12 @@ main =
 
 type alias Model a =
     { sourceText : String
-    , renderedText : Html a
+    , renderedText : a
     }
 
 type Msg
-    = Render
+    = Clear
+    | Render
     | TextA
     | TextB
     | TextC
@@ -34,7 +35,10 @@ type alias Flags =
 
 render : String -> Html msg 
 render sourceText =
-  MeenyLatex.Driver.render "" sourceText
+  let 
+    macroDefinitions = ""
+  in 
+    MeenyLatex.Driver.render macroDefinitions sourceText
 
 -- MAIN FUNCTIONS
 
@@ -65,6 +69,11 @@ update msg model =
             , Cmd.none
             )
 
+        Clear ->
+            ({ model | sourceText = ""
+              , renderedText = render ""
+            }, Cmd.none)
+
         TextA ->
            ({ model | sourceText = textA
               , renderedText = render textA
@@ -91,14 +100,16 @@ update msg model =
 view model =
     div [style "margin-top" "20px"]
         [ 
-         label "Source text"
+         label "Enter text or press a button :"
         , editor model
         , spacer 30
-        , span [] [ 
-             button ([ onClick TextA ] ++ buttonStyle) [ text "Text A" ]
+        , span [style "margin-left" "20px"] [ 
+              button ([ onClick Clear ] ++ buttonStyle) [ text "Clear" ]
+            , button ([ onClick Render ] ++ buttonStyle) [ text "Render" ]
+            , button ([ onClick TextA ] ++ buttonStyle) [ text "Text A" ]
             , button ([ onClick TextB ] ++ buttonStyle) [ text "Text B" ]
             , button ([ onClick TextC ] ++ buttonStyle) [ text "Text C" ]
-            , button ([ onClick Render ] ++ buttonStyle) [ text "Render" ]
+           
         ]
         , renderedSourcePane model
         ]
@@ -112,14 +123,14 @@ label text_ =
     p labelStyle [ text text_ ]
 
 editor model =
-    textarea (myTextStyle "#eef" ++ [ onInput GetContent ]) [ text model.sourceText ]
+   textarea (myTextStyle "#eef" ++ [ onInput GetContent, value model.sourceText ] ) 
+      [  ]
 
 
-renderedSourcePane : Model msg -> Html msg
+renderedSourcePane : Model (Html msg) -> Html msg
 renderedSourcePane model =
-    model.renderedText
         -- |> List.map (\x -> Html.div [ style "margin-bottom" "0.65em" ] [ x ])
-        -- |> Html.div renderedTextStyle
+        Html.div renderedTextStyle [model.renderedText]
 
 
 
@@ -139,9 +150,9 @@ buttonStyle : List (Html.Attribute msg)
 buttonStyle =
     [ style "backgroundColor" "rgb(100,100,100)"
     , style "color" "white"
-    , style "width" "90px"
+    , style "width" "70px"
     , style "height" "25px"
-    , style "margin-left" "20px"
+    , style "margin-right" "10px"
     , style "font-size" "12pt"
     , style "text-align" "center"
     , style "border" "none"
@@ -175,11 +186,41 @@ textStyle width height color =
 textA = 
   """
 \\strong{Welcome!}
+This is \\strong{Text A}.
+
+\\smallskip
+
+You should see formula
+below this line.  
+
+
+\\smallskip
+
+If not,
+press \\strong{Text B}, 
+then \\strong{Text A}.
 
 $$
 \\int e^x dx = e^x + C
 $$
+
+\\smallskip
+There seems to be an initialization
+problem. \\italic{\\strong{Conjecture:} in the init
+phase, the  DOM
+does not yet have its math nodes set up
+when the custom element code is called
+to process math text.  But who knows?}
+
+\\smallskip
+\\strong{Notes.} 
+This demo app uses
+an experimental version of MiniLatex.
+There are obvious deficiencies which
+will be corrected soon.
 """
+
+
 
 textB = 
     """

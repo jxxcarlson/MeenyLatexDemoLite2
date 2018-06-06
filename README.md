@@ -14,20 +14,22 @@ Problem 1
 ---------
 
 The math text is not displaying on startup. However,
-if you press the "Alt Text" button, alternate text
-is loaded, rendered, and correctly displayed.  The
-same is true if you press the "Orig Text" button, 
-which loads the original text which is loaded on 
-startup.
+if you press the "Text B" button, alternate text
+is loaded, rendered, and correctly displayed.  Or 
+if you subsequently press the "Text A" button to 
+reload the original text.
+
+Alternate test: click "Clear", type in your own
+LaTeX text, then click "Render."
 
 Problem 2
 ---------
 
 Runtime error when running as an Ellie.  See
-https://ellie-test-19-cutover.now.sh/q96nCK64MRa1
+https://ellie-test-19-cutover.now.sh/rtpvjyYX5Ka1
 
 
-Notes
+NOTES
 -----
 Below is console output for a session with
 MeenyLatexDemoLite -- console.log
@@ -44,45 +46,56 @@ The call to the custom element code results
 from executing
 
 ```
-editRecord = MeenyLatex.Driver.setup 0 textA
+renderedText = render theSourceText
 ```
 
 in initializing or updating the model. This code
-is not very transparent
+comes from the MeenyLatex package:
 
 ```
+render : String -> Html msg 
+render sourceText =
+  let 
+    macroDefinitions = ""
+  in 
+    MeenyLatex.Driver.render macroDefinitions sourceText
+```
+
 1. STARTUP
 # init is called, and it calls
-# editRecord = MeenyLatex.Driver.setup 0 textA
-# in updating the model
+# Use renderedText = render textA
+# to initialize model.renderedText
 
+# CONSOLE OUTPUT
 connectedCallback
 enqueueTypeset
 
-// No math display 
+# No math display 
 
 ============
 
 2. CLICK TAB “Text B”:
-# update is called, and it calls
-# editRecord = MeenyLatex.Driver.setup 0 textB
+# Use renderedText = render textB
+# to update model.renderedText
 
+# CONSOLE OUTPUT
 set content
 connectedCallback
 enqueueTypeset
 
-// Math display OK
+# Math display OK
 
 =====
 
 3. CLICK TAB “Text A”
-# update is called, and it calls
-# editRecord = MeenyLatex.Driver.setup 0 textA
+# Use renderedText = render textA
+# to update model.renderedText
 # This is the same call as in (1)
 
+# CONSOLE OUTPUT
 set content
 connectedCallback
 enqueueTypeset
 
-// Math display OK
+# Math display OK
 ```
