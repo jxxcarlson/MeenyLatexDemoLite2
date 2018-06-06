@@ -18,7 +18,7 @@ main =
 
 type alias Model a =
     { sourceText : String
-    , editRecord : EditRecord a
+    , renderedText : Html a
     }
 
 type Msg
@@ -32,6 +32,10 @@ type Msg
 type alias Flags =
     {}
 
+render : String -> Html msg 
+render sourceText =
+  MeenyLatex.Driver.render "" sourceText
+
 -- MAIN FUNCTIONS
 
 init : Flags -> ( Model (Html msg), Cmd Msg )
@@ -39,7 +43,7 @@ init flags =
     let
         model =
             { sourceText = textA
-            , editRecord = MeenyLatex.Driver.setup 0 textA
+            , renderedText = render textA
             }
     
     in
@@ -56,24 +60,24 @@ update msg model =
     case msg of
         Render ->
             ( { model
-                | editRecord = MeenyLatex.Driver.setup 0 model.sourceText
+                | renderedText = render model.sourceText
               }
             , Cmd.none
             )
 
         TextA ->
            ({ model | sourceText = textA
-              , editRecord = MeenyLatex.Driver.setup 0 textA
+              , renderedText = render textA
             }, Cmd.none)
 
         TextB ->
            ({ model | sourceText = textB
-              , editRecord = MeenyLatex.Driver.setup 0 textB
+              , renderedText = render textB
             }, Cmd.none)
 
         TextC ->
            ({ model | sourceText = textC
-              , editRecord = MeenyLatex.Driver.setup 0 textC
+              , renderedText = render textC
             }, Cmd.none)
 
 
@@ -111,11 +115,11 @@ editor model =
     textarea (myTextStyle "#eef" ++ [ onInput GetContent ]) [ text model.sourceText ]
 
 
-renderedSourcePane : Model (Html msg) -> Html msg
+renderedSourcePane : Model msg -> Html msg
 renderedSourcePane model =
-    MeenyLatex.Driver.getRenderedText "" model.editRecord
-        |> List.map (\x -> Html.div [ style "margin-bottom" "0.65em" ] [ x ])
-        |> Html.div renderedTextStyle
+    model.renderedText
+        -- |> List.map (\x -> Html.div [ style "margin-bottom" "0.65em" ] [ x ])
+        -- |> Html.div renderedTextStyle
 
 
 
