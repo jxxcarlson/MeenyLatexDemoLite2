@@ -68,7 +68,7 @@ var app = Elm.Main.embed( node,  { })
 var typesetTimeout = null
 var typesetQueue = []
 function enqueueTypeset(el) {
-	console.log("enqueueTypeset")
+	console.log("enqueueTypeset: " + el)
 	typesetQueue.push(el)
 	clearTimeout(typesetTimeout)
 	typesetTimeout = setTimeout(function () {
@@ -83,7 +83,7 @@ function enqueueTypeset(el) {
 var updateQueue = []
 var updateTimeout = null
 function enqueueUpdate(el) {
-	console.log("enqueueTypeset")
+	console.log("enqueueUpdate: " + el)
 	updateQueue.push(el)
 	clearTimeout(updateTimeout)
 	updateTimeout = setTimeout(function () {
@@ -94,12 +94,12 @@ function enqueueUpdate(el) {
 
 customElements.define('math-text', class extends HTMLElement {
 	get content() {
-		console.log("get content")
+		console.log("get content: " + this._content)
 		return this._content
 	}
 
 	set content(value) {
-		console.log("set content")
+		console.log("set content: " + value)
 		if (this._content === value) return
 		this._content = value
 		var jaxScript = this.querySelector('script')
@@ -109,10 +109,10 @@ customElements.define('math-text', class extends HTMLElement {
 	}
 
 	connectedCallback() {
-		console.log("connectedCallback")
+		console.log("connectedCallback: " + this._content )
 		this.textContent = this._content
 		this._connected = true
-		this.style.opacity = 0
+		this.style.opacity = 1
 		this.style.display = 'inline'
 		enqueueTypeset(this)
 	}

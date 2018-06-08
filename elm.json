@@ -13,7 +13,7 @@
         "elm/parser": "1.0.0",
         "elm/random": "1.0.0",
         "elm/regex": "1.0.0",
-        "jxxcarlson/meenylatex": "1.0.3"
+        "jxxcarlson/meenylatex": "1.0.5"
     },
     "test-dependencies": {},
     "do-not-edit-this-by-hand": {
