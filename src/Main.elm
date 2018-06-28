@@ -11,7 +11,7 @@ import MeenyLatex.Driver
 
 
 main =
-    Browser.embed { view = view, update = update, init = init, subscriptions = subscriptions }
+    Browser.element { view = view, update = update, init = init, subscriptions = subscriptions }
 
 
 -- TYPES
@@ -193,6 +193,10 @@ This is \\strong{Text A}.
 You should see formula
 below this line.  
 
+$$
+\\int e^x dx = e^x + C
+$$
+
 
 \\smallskip
 
@@ -200,9 +204,6 @@ If not,
 press \\strong{Text B}, 
 then \\strong{Text A}.
 
-$$
-\\int e^x dx = e^x + C
-$$
 
 \\smallskip
 There seems to be an initialization
