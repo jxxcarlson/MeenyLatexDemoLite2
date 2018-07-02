@@ -19,6 +19,7 @@ main =
 type alias Model a =
     { sourceText : String
     , renderedText : a
+    , counter : Int
     }
 
 type Msg
@@ -48,6 +49,7 @@ init flags =
         model =
             { sourceText = textA
             , renderedText = render textA
+            , counter = 0
             }
     
     in
@@ -64,7 +66,8 @@ update msg model =
     case msg of
         Render ->
             ( { model
-                | renderedText = render model.sourceText
+                | renderedText = render model.sourceText,
+                  counter = model.counter + 1
               }
             , Cmd.none
             )
@@ -72,21 +75,25 @@ update msg model =
         Clear ->
             ({ model | sourceText = ""
               , renderedText = render ""
+              , counter = model.counter + 1
             }, Cmd.none)
 
         TextA ->
            ({ model | sourceText = textA
               , renderedText = render textA
+              , counter = model.counter + 1
             }, Cmd.none)
 
         TextB ->
            ({ model | sourceText = textB
               , renderedText = render textB
+              , counter = model.counter + 1
             }, Cmd.none)
 
         TextC ->
            ({ model | sourceText = textC
               , renderedText = render textC
+              , counter = model.counter + 1
             }, Cmd.none)
 
 
@@ -106,9 +113,9 @@ view model =
         , span [style "margin-left" "20px"] [ 
               button ([ onClick Clear ] ++ buttonStyle) [ text "Clear" ]
             , button ([ onClick Render ] ++ buttonStyle) [ text "Render" ]
-            , button ([ onClick TextA ] ++ buttonStyle) [ text "Text A" ]
-            , button ([ onClick TextB ] ++ buttonStyle) [ text "Text B" ]
-            , button ([ onClick TextC ] ++ buttonStyle) [ text "Text C" ]
+            , button ([ onClick TextA ] ++ buttonStyle) [ text "Test A" ]
+            , button ([ onClick TextB ] ++ buttonStyle) [ text "Test B" ]
+            , button ([ onClick TextC ] ++ buttonStyle) [ text "Test C" ]
            
         ]
         , renderedSourcePane model
@@ -130,7 +137,7 @@ editor model =
 renderedSourcePane : Model (Html msg) -> Html msg
 renderedSourcePane model =
         -- |> List.map (\x -> Html.div [ style "margin-bottom" "0.65em" ] [ x ])
-        Html.div renderedTextStyle [model.renderedText]
+        Keyed.node "div" renderedTextStyle [((String.fromInt model.counter), model.renderedText)]
 
 
 
@@ -138,7 +145,7 @@ renderedSourcePane model =
 
 
 renderedTextStyle = [
-    style "width" "400px",
+    style "width" "500px",
     style "height" "250px",
     style "margin-left" "20px", 
     style "margin-top" "7px",
@@ -185,54 +192,45 @@ textStyle width height color =
 
 textA = 
   """
-\\strong{Welcome!}
-This is \\strong{Text A}.
+\\section{Test A}
 
-\\smallskip
+I am sure, said the surly
+examiner, that you are familiar
+with this simple formula:
 
-You should see formula
-below this line.  
 
 $$
-\\int e^x dx = e^x + C
+\\int_0^1 x^n dx = \\frac{1}{n+1}
 $$
 
+\\subsection{Experiment}
 
-\\smallskip
-
-If not,
-press \\strong{Text B}, 
-then \\strong{Text A}.
-
-
-\\smallskip
-There seems to be an initialization
-problem. \\italic{\\strong{Conjecture:} in the init
-phase, the  DOM
-does not yet have its math nodes set up
-when the custom element code is called
-to process math text.  But who knows?}
-
-\\smallskip
-\\strong{Notes.} 
-This demo app uses
-an experimental version of MiniLatex.
-There are obvious deficiencies which
-will be corrected soon.
+Try modifying the formula 
+above, then click the \\strong{Render}
+button.
 """
 
 
 
 textB = 
     """
-$$
-\\frac{d}{dx} e^{kx} = ke^{kx}
-$$
+\\section{Test B}
+
+The professor harrumphed,
+in his customary gruff voice, \\italic{please see equation \\eqref{foo}!}
+
+\\begin{equation}
+\\label{foo}
+\\psi(x,t) = \\int_{-\\infty}^\\infty  \\left[ \\
+\\frac{1}{2\\pi}  \\int_{-\\infty}^\\infty e^{ipx} e^{ -ip^2t/2m \\hbar} e^{-ipx'} dp \\right] \\phi(x')  dx'
+\\end{equation}
+
+
 """
 
 textC =
     """
-\\section{Introduction}
+\\section{Test C}
 
 This \\strong{is} a test.  Here is the
 Pythagorean Theorem: $a^2 + b^2 = c^2$.
@@ -245,6 +243,8 @@ in Calculus class.
 \\label{integral}
 \\int_0^1 x^n dx = \\frac{1}{n+1}
 \\end{equation}
+
+
 
 \\subsection{More stuff}
 
